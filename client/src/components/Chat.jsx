@@ -9,7 +9,7 @@ class Chat extends Component {
 
   render() {
     return (
-      <div className="mainWrapper">
+      <div className="mainWrapper chatDiv">
         <div className="chat">
           <div className="messages" ref="messages">
             <Messages

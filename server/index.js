@@ -8,8 +8,6 @@ const Message = require('./database/message');
 const Channel = require('./database/channel');
 const mailer = require('../mailServer/mailer');
 const cors = require('cors');
-const Users = require('./users');
-const users = new Users();
 
 const app = express();
 const server = http.Server(app);
@@ -46,7 +44,7 @@ app.post('/sendLink', (req, res) => {
 });
 
 app.get('*', function (req, res){
-  res.sendFile('index.html', {root: '../client/dist'});
+  res.sendFile('index.html', { root: path.join(__dirname, '../client/dist') });
 })
 
 io.on('connection', (socket) => {
@@ -78,7 +76,13 @@ io.on('connection', (socket) => {
     });
   });
 
-  socket.on('drawing', (data) => socket.broadcast.emit('drawing', data));
+  socket.on('drawing', (data) => {
+    socket.broadcast.to(data.channelId).emit('drawing', data)
+  });
+
+  socket.on('client:updateCode', (data) => {
+    socket.broadcast.to(data.channelId).emit('server:newCode', data);
+  });
 
   socket.on('disconnect', () => {
     console.log('Disconnecting');
